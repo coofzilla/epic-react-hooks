@@ -17,21 +17,20 @@ function PokemonInfo({pokemonName}) {
 
   React.useEffect(() => {
     if (!pokemonName) return
-
+    setError(null)
+    setPokemon(null)
     const fetchData = async () => {
-      setPokemon(null)
-      setError(null)
-      const response = await fetchPokemon(pokemonName)
-      setPokemon(response)
+      try {
+        const response = await fetchPokemon(pokemonName)
+        setPokemon(response)
+      } catch (err) {
+        setError(err)
+      }
     }
-    try {
-      fetchData()
-    } catch (err) {
-      setError(err)
-    }
-  }, [error, pokemonName])
+    fetchData()
+  }, [pokemonName])
 
-  if (error.message) {
+  if (error) {
     return (
       <div role="alert">
         There was an error:{' '}
