@@ -12,39 +12,48 @@ import {
 } from '../pokemon'
 
 function PokemonInfo({pokemonName}) {
-  const [pokemon, setPokemon] = React.useState(null)
-  const [error, setError] = React.useState(null)
+  const [state, setState] = React.useState({
+    status: 'idle',
+    pokemon: null,
+    error: null,
+  })
 
   React.useEffect(() => {
     if (!pokemonName) return
-    setError(null)
-    setPokemon(null)
+
+    setState(prevState => ({...prevState, status: 'pending'}))
     const fetchData = async () => {
       try {
         const response = await fetchPokemon(pokemonName)
-        setPokemon(response)
+        setState(prevState => ({
+          ...prevState,
+          status: 'resolved',
+          pokemon: response,
+        }))
       } catch (err) {
-        setError(err)
+        setState(prevState => ({
+          ...prevState,
+          status: 'rejected',
+          error: err.message,
+        }))
       }
     }
     fetchData()
   }, [pokemonName])
 
-  if (error) {
+  if (state.status === 'idle') {
+    return 'Submit a pokemon'
+  } else if (state.status === 'pending') {
+    return <PokemonInfoFallback name={pokemonName} />
+  } else if (state.status === 'rejected') {
     return (
       <div role="alert">
         There was an error:{' '}
-        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+        <pre style={{whiteSpace: 'normal'}}>{state.error}</pre>
       </div>
     )
-  }
-
-  if (!pokemonName) {
-    return 'Submit a pokemon'
-  } else if (!pokemon) {
-    return <PokemonInfoFallback name={pokemonName} />
-  } else {
-    return <PokemonDataView pokemon={pokemon} />
+  } else if (state.status === 'resolved') {
+    return <PokemonDataView pokemon={state.pokemon} />
   }
 }
 
