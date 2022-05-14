@@ -18,6 +18,8 @@ function PokemonInfo({pokemonName}) {
     error: null,
   })
 
+  const {status, pokemon, error} = state
+
   React.useEffect(() => {
     if (!pokemonName) return
 
@@ -41,19 +43,18 @@ function PokemonInfo({pokemonName}) {
     fetchData()
   }, [pokemonName])
 
-  if (state.status === 'idle') {
+  if (status === 'idle') {
     return 'Submit a pokemon'
-  } else if (state.status === 'pending') {
+  } else if (status === 'pending') {
     return <PokemonInfoFallback name={pokemonName} />
-  } else if (state.status === 'rejected') {
+  } else if (status === 'rejected') {
     return (
       <div role="alert">
-        There was an error:{' '}
-        <pre style={{whiteSpace: 'normal'}}>{state.error}</pre>
+        There was an error: <pre style={{whiteSpace: 'normal'}}>{error}</pre>
       </div>
     )
-  } else if (state.status === 'resolved') {
-    return <PokemonDataView pokemon={state.pokemon} />
+  } else if (status === 'resolved') {
+    return <PokemonDataView pokemon={pokemon} />
   }
 }
 
