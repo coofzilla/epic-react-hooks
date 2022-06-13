@@ -3,20 +3,35 @@
 
 import * as React from 'react'
 
-const useLocalStorageState = (key, defaultValue = '') => {
-  const [state, setState] = React.useState(
-    () => window.localStorage.getItem(key) ?? defaultValue,
-  )
+const useLocalStorageState = (
+  key,
+  defaultValue = '',
+  {serialize = JSON.stringify, deserialize = JSON.parse} = {},
+) => {
+  const [state, setState] = React.useState(() => {
+    const valueInLocalStorage = window.localStorage.getItem(key)
+    if (valueInLocalStorage) {
+      return deserialize(valueInLocalStorage)
+    }
+    return defaultValue
+  })
 
   React.useEffect(() => {
-    window.localStorage.setItem(key, state)
-  }, [key, state])
+    window.localStorage.setItem(key, serialize(state))
+  }, [key, serialize, state])
 
   return [state, setState]
 }
 
+const customSerializer = input => {
+  console.log('IM CUSTOM BABY')
+  return JSON.stringify(input)
+}
+
 function Greeting({initialName = ''}) {
-  const [state, setState] = useLocalStorageState('name', initialName)
+  const [state, setState] = useLocalStorageState('name', initialName, {
+    serialize: customSerializer,
+  })
 
   function handleChange(event) {
     setState(event.target.value)
