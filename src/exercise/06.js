@@ -12,13 +12,13 @@ import {
 } from '../pokemon'
 
 function PokemonInfo({pokemonName}) {
-  const [state, setState] = React.useState({
+  const [{status, pokemon, error}, setState] = React.useState({
     status: 'idle',
     pokemon: null,
     error: null,
   })
 
-  const {status, pokemon, error} = state
+  //   const {status, pokemon, error} = state
 
   React.useEffect(() => {
     if (!pokemonName) return
