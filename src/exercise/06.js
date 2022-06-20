@@ -50,11 +50,11 @@ function PokemonInfo({pokemonName}) {
           status: 'resolved',
           pokemon: response,
         }))
-      } catch (err) {
+      } catch (error) {
         setState(prevState => ({
           ...prevState,
           status: 'rejected',
-          error: err.message,
+          error,
         }))
       }
     }
@@ -93,7 +93,7 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <ErrorBoundary key={pokemonName} FallbackComponent={ErrorFallback}>
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>
